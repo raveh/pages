@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - 结构体位域</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">结构体位域</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<p>C或C++允许在结构体中以位为单位设置成员所占的内存空间，以位为单位的结构体成员，简称为位域或位段(Bit field)。位域的优点是节省空间，还可以进行内存对齐。常用于定义网络通讯协议或者应用程序标志位信息。</p>
+<ol>
+<li>一般数据类型使用整型或者无符号整型。</li>
+<li>一个位域必须存储在同一个字节中，如一个字节所剩空间不够存放另一位域，从下一单元存该位域。</li>
+<li>无名位域来作填充或调整位置，无法使用。</li>
+<li>位域长度为0则下一个位域从下一个字节开始，而且定义长度为0的位段不能指明名字</li>
+</ol>
+<p>定义格式：<code>数据类型 变量名:位域大小</code></p>
+<p>举个例子：</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+struct ApplicationFlags {
+    unsigned int IS_RUNABLE:1;  // 取值范围1bit=[0,1]
+    unsigned int :4;            // 无名位域
+    unsigned int AGE:2;         // 取值范围2bit=[0,3]
+};
+
+void main() {
+    struct ApplicationFlags flags;
+    flags.IS_RUNABLE = 1;
+    flags.AGE = 2;
+    printf(&quot;sizeof(flags)=%d\n&quot;, sizeof(flags));
+    printf(&quot;flags.IS_RUNABLE=%d\n&quot;, flags.IS_RUNABLE);
+    printf(&quot;flags.AGE=%d\n&quot;, flags.AGE);
+}
+
+// 使用PellesC执行结果：
+// sizeof(flags)=4
+// flags.IS_RUNABLE=1
+// flags.AGE=2
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/c'>#c</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

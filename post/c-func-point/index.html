@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - C函数指针</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">C函数指针</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<p>在C语言中，函数存放在内存的代码区，跟基本的数据类型或者数组一样，也有一个内存的起始位置。函数的类型由其参数以及返回类型共同决定，跟函数名无关。</p>
+<p>一个简单的例子</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    int (*pf)(int, int);
+    pf = add;
+    printf(&quot;   pf(1, 2) = %d\n&quot;, pf(1, 2));
+    printf(&quot;(*pf)(1, 2) = %d\n&quot;, (*pf)(1, 2));
+}
+// 编译执行可以正常输出：
+// cc demo1.c -o demo1
+// demo1
+//    pf(1, 2) = 3
+// (*pf)(1, 2) = 3
+</code></pre>
+<h2>函数指针定义</h2>
+<h3>直接定义</h3>
+<p><code>返回数据类型 (*函数指针名称) (入参类型列表逗号分隔)</code></p>
+<p>例子
+<code>int (*pf)(int, int);</code></p>
+<h3>使用typedef定义</h3>
+<p><code>typedef 返回数据类型 (*函数指针类型名称) (入参类型列表逗号分隔)</code></p>
+<p>例子</p>
+<pre><code class="language-c">type int (*PF)(int, int);
+PF pf; 
+</code></pre>
+<p>此时<code>PF</code>是指针函数类型，不是真正的函数指针变量，需要使用该类型定义出函数指针变量使用。</p>
+<h2>函数指针的使用</h2>
+<h3>作为变量</h3>
+<p>如同开头简单的例子所示，函数指针变量作为普通变量几乎没什么意义，还不如直接调用函数。放到结构体中，是不是有点像C++或者Java面向对象的味道了？</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+struct Student {
+    unsigned int id;
+    char *name;
+    void (*print)(struct Student *stu);
+};
+
+void PrintInfo(struct Student *stu) {
+    printf(&quot;%d -- %s\n&quot;, stu-&gt;id, stu-&gt;name);
+}
+
+int main() {
+    struct Student stu = {1, &quot;raveh&quot;, PrintInfo};
+    stu.print(&amp;stu);
+}
+// 编译执行可以正常输出：
+// cc demo2.c -o demo2
+// demo2
+// 1 -- raveh
+</code></pre>
+<h3>作为函数形参</h3>
+<p>一个例子，可以让数据给不同的函数去处理:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int max(int a, int b) {
+    return a &gt; b ? a : b;
+}
+
+int min(int a, int b) {
+    return a &gt; b ? b : a;
+}
+
+void proc(int a, int b, int(*pf)(int, int)) {
+    printf(&quot;a=%d, b=%d, pf(%d,%d)=%d\n&quot;, a, b, a, b, pf(a, b));
+}
+
+int main() {
+    int a = rand(), b = rand();
+    proc(a, b, max);
+    proc(a, b, min);
+}
+// 编译执行可以正常输出：
+// cc demo3.c -o demo3
+// demo3
+// a=1804289383, b=846930886, pf(1804289383,846930886)=1804289383
+// a=1804289383, b=846930886, pf(1804289383,846930886)=846930886
+</code></pre>
+<p>这个程序可以使用typedef定义一个函数指针，使proc函数的参数列表看起来更清晰一点。</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef int(*PF)(int, int);
+
+int max(int a, int b) {
+    return a &gt; b ? a : b;
+}
+
+int min(int a, int b) {
+    return a &gt; b ? b : a;
+}
+
+void proc(int a, int b, PF pf) {
+    printf(&quot;a=%d, b=%d, pf(%d,%d)=%d\n&quot;, a, b, a, b, pf(a, b));
+}
+
+int main() {
+    int a = rand(), b = rand();
+    proc(a, b, max);
+    proc(a, b, min);
+}
+// 编译执行可以正常输出：
+// cc demo4.c -o demo4
+// demo4
+// a=1804289383, b=846930886, pf(1804289383,846930886)=1804289383
+// a=1804289383, b=846930886, pf(1804289383,846930886)=846930886
+</code></pre>
+<h3>作为函数返回值</h3>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int max(int a, int b) {
+    return a &gt; b ? a : b;
+}
+
+int min(int a, int b) {
+    return a &gt; b ? b : a;
+}
+
+/**
+ * 可以按照由内向外的顺序看这个函数的声明
+ * getFun(char oper)有形参列表，则getFun是一个函数
+ * getFun前面有*，所以getFun返回一个指针
+ * 返回的指针本身也包含形参列表(int，int)
+ * 因此返回的指针指向一个返回值为int的函数
+ */
+int (*getFun(char oper))(int, int) {
+    switch(oper) {
+        case '&gt;':
+            return max;
+            break;
+        case '&lt;':
+            return min;
+            break;
+    }
+    return NULL;
+}
+
+int proc(int a, int b, char oper) {
+    int(*pf)(int,int) = getFun(oper);
+    if(pf) {
+        return pf(a, b);
+    }
+    return -1;
+}
+
+int main() {
+    int a = rand(), b = rand();
+    printf(&quot;proc(%d, %d, %c) = %d\n&quot;, a, b, '&gt;', proc(a, b, '&gt;'));
+    printf(&quot;proc(%d, %d, %c) = %d\n&quot;, a, b, '&lt;', proc(a, b, '&lt;'));
+}
+// 编译执行可以正常输出：
+// cc demo5.c -o demo5
+// demo5
+// proc(1804289383, 846930886, &gt;) = 1804289383
+// proc(1804289383, 846930886, &lt;) = 846930886
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/c'>#c</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

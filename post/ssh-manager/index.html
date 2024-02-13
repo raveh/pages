@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - SSH链接管理脚本</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">SSH链接管理脚本</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<p>平常维护linux机器比较多，很多时候都要临时通过SSH登上去，执行一些命令什么的，写了一个Bash Shell脚本管理这些链接，有需要的可以试试。</p>
+<pre><code class="language-bash">#!/bin/bash
+#filename hh
+
+scriptdir=`realpath $0`
+workdir=`dirname $scriptdir`
+confile=$workdir/hh.conf
+key='ABCDE1234567890ABCDE1234567890AB' #随意32位16进制的数字
+
+function showUsage() {
+  echo &quot;ssh toolkit, auther: raveh@live.com&quot;
+  echo &quot;`basename $0 .sh` &lt;host alias&gt;: login host. &quot;
+  echo &quot;`basename $0 .sh` list: show all hosts.&quot;
+  echo &quot;`basename $0 .sh` encode: encode string.&quot;
+  echo &quot;`basename $0 .sh` decode: decode string.&quot;
+}
+
+function listHost() {
+  cat $confile | while read line; do
+    if [[ $line == \#* ]]; then
+      continue
+    fi
+    echo $line | awk -F ',' '{if(NF&gt;5)printf(&quot;%8s -- %12s --&gt; %-32s %-28s\n&quot;, $1, $7, $5&quot;@&quot;$3&quot;:&quot;$4, &quot;(&quot;$8&quot;)&quot;)}'
+  done
+}
+
+function loginHost() {
+  _conf=`awk -F ',' '{if($1==&quot;'$1'&quot;){print $0}}' $confile`
+  if [ -z &quot;$_conf&quot; ]; then
+    echo &quot;[ERROR] host [$1] not found. check [$confile], abort.&quot;
+    exit 0
+  fi
+  _prox=`echo $_conf | awk -F ',' '{print $2}'`
+  _host=`echo $_conf | awk -F ',' '{print $3}'`
+  _port=`echo $_conf | awk -F ',' '{print $4}'`
+  _user=`echo $_conf | awk -F ',' '{print $5}'`
+  _psws=`echo $_conf | awk -F ',' '{print $6}'`
+  _pswd=`decode $_psws`
+  if [ -z &quot;$_pswd&quot; ]; then
+    echo &quot;[ERROR] password($_psws) decode fatal. abort.&quot;
+    exit 1
+  fi
+  if [ -z &quot;$_prox&quot; ]; then
+    sshpass -p &quot;$_pswd&quot; ssh -o StrictHostKeyChecking=no -p $_port $_user@$_host
+  else
+    sshpass -p &quot;$_pswd&quot; ssh -o StrictHostKeyChecking=no -p $_port -o ProxyCommand=&quot;nc -X 5 -x $_prox %h %p&quot; $_user@$_host
+  fi
+}
+
+function encode() {
+  echo -n &quot;$1&quot; | openssl enc -aes-128-ecb -a -e -K $key -nosalt
+}
+
+function decode() {
+  echo &quot;$1&quot; | openssl enc -aes-128-ecb -a -d -K $key -nosalt
+  echo &quot;&quot;
+}
+
+type ssh &gt;/dev/null 2&gt;&amp;1 || { echo &gt;&amp;2 &quot;require ssh but it's not installed. abort.&quot;; exit 1; }
+type sshpass &gt;/dev/null 2&gt;&amp;1 || { echo &gt;&amp;2 &quot;require sshpass but it's not installed. abort.&quot;; exit 1; }
+type nc &gt;/dev/null 2&gt;&amp;1 || { echo &gt;&amp;2 &quot;require nc(openbsd) but it's not installed. abort.&quot;; exit 1; }
+type openssl &gt;/dev/null 2&gt;&amp;1 || { echo &gt;&amp;2 &quot;require openssl but it's not installed. abort.&quot;; exit 1; }
+
+if [ ! -f $confile ]; then
+  echo &quot;[ERROR] configure file [$confile] not exists. abort.&quot;
+  exit 0
+fi
+
+if [ $# -lt 1 ]; then
+  showUsage
+  exit 0
+fi
+case $1 in
+  help* | HELP* | \?* | \-* )
+    showUsage
+    ;;
+  list* | LIST* | ls* )
+    listHost
+    ;;
+  encode* | ENCODE* )
+    encode $2
+    ;;
+  decode* | DECODE* )
+    decode $2
+    ;;
+  * )
+    loginHost $1
+    ;;
+esac
+</code></pre>
+<p>需要安装ssh client/sshpass/netcat-openbsd/openssl软件，我用的是Debian系统，使用以下命令安装：</p>
+<pre><code class="language-bash">apt install openssh-client sshpass netcat-openbsd openssl
+</code></pre>
+<p>配置文件hh.conf的格式示例：</p>
+<pre><code>raveh@DESKTOP-MBGF84O:~/work/shell/hh$ cat hh.conf
+# 格式示例
+# 访问别名,代理:端口,SSH地址或域名,端口,用户,密码,分类,描述
+
+# 直接访问
+pi,,192.168.1.29,22,root,udJPY+zJ5CyoZHiKxipf2A==,树莓派,里面放着我的博客
+
+# 使用代理访问
+ppi,127.0.0.1:1080,192.168.1.29,22,root,udJPY+zJ5CyoZHiKxipf2A==,树莓派,里面放着我的博客
+</code></pre>
+<p>命令示例</p>
+<pre><code class="language-txt">hh alias        # 登录主机
+hh list         # 列出所有主机    
+hh encode       # 用于密码的加密
+hh decode       # 用于密码的解密
+
+raveh@DESKTOP-MBGF84O:~/work/shell/hh$ hh encode 123
+udJPY+zJ5CyoZHiKxipf2A==
+raveh@DESKTOP-MBGF84O:~/work/shell/hh$ hh decode udJPY+zJ5CyoZHiKxipf2A==
+123
+raveh@DESKTOP-MBGF84O:~/work/shell/hh$ hh list
+    pi --    树莓派 --&gt; root@192.168.1.29:22             (里面放着我的博客)
+   ppi --    树莓派 --&gt; root@192.168.1.29:22             (里面放着我的博客-使用代理)
+raveh@DESKTOP-MBGF84O:~/work/shell/hh$ hh pi
+Linux raspberrypi 5.10.92-v8+ #1514 SMP PREEMPT Mon Jan 17 17:39:38 GMT 2022 aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sat Feb 26 01:39:26 2022 from 192.168.1.28
+root@raspberrypi:~ #
+root@raspberrypi:~ # uptime
+ 02:51:08 up 122 days, 13:08,  1 users,  load average: 0.10, 0.01, 0.01
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/linux'>#linux</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

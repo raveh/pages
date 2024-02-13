@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - 单链表练习</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">单链表练习</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<p>直接贴代码：</p>
+<pre><code class="language-c">#pragma once
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/**
+ * 单链表练习
+ * -std=c99
+ */
+
+typedef int type;
+
+struct SingleListNode {
+    type data;
+    struct SingleListNode *next;
+};
+
+struct SingleList {
+    unsigned int size;
+    struct SingleListNode *head;
+};
+
+/**
+ * 函数声明
+ */
+struct SingleList* SingleListCreate();
+void SingleListPushBack(struct SingleList *list, type data);
+void SingleListPushFront(struct SingleList *list, type data);
+struct SingleListNode* SingleListPopBack(struct SingleList *list);
+struct SingleListNode* SingleListPopFront(struct SingleList *list);
+struct SingleListNode* SingleListAt(struct SingleList *list, unsigned int index);
+void SingleListInsert(struct SingleList *list, unsigned int pos, type data);
+void SingleListRemove(struct SingleList *list, unsigned int pos);
+void SingleListReverse(struct SingleList *list);
+type* SingleListToArray(struct SingleList *list);
+struct SingleList* SingleListFromArray(type* array, unsigned int len);
+struct SingleList* SingleListSub(struct SingleList *list, unsigned int bpos, unsigned int epos);
+void SingleListErase(struct SingleList *list);
+void SingleListPrintNode(unsigned int index, struct SingleListNode *node);
+void SingleListPrintList(struct SingleList *list);
+
+/**
+ * 创建并初始化一个链表
+ */
+struct SingleList* SingleListCreate() {
+    struct SingleList *list = (struct SingleList*) malloc(sizeof(struct SingleList));
+    list-&gt;head = NULL;
+    list-&gt;size = 0;
+    return list;
+}
+
+/**
+ * 尾部追加一个节点
+ */
+void SingleListPushBack(struct SingleList *list, type data) {
+    struct SingleListNode *node = (struct SingleListNode*)malloc(sizeof(struct SingleListNode));
+    node-&gt;next = NULL;
+    node-&gt;data = data;
+    if (list-&gt;head == NULL) {
+        list-&gt;head = node;
+    } else {
+        struct SingleListNode *temp = list-&gt;head;
+        while(temp-&gt;next != NULL) {
+            temp = temp-&gt;next;
+        }
+        temp-&gt;next = node;
+    }
+    ++list-&gt;size;
+}
+
+/**
+ * 头部增加一个节点
+ */
+void SingleListPushFront(struct SingleList *list, type data) {
+    struct SingleListNode *node = (struct SingleListNode*)malloc(sizeof(struct SingleListNode));
+    node-&gt;next = list-&gt;head;
+    node-&gt;data = data;
+    list-&gt;head = node;
+    ++list-&gt;size;
+}
+
+/**
+ * 尾部弹出一个节点，节点使用完后一定要free掉
+ */
+struct SingleListNode* SingleListPopBack(struct SingleList *list) {
+    if (list-&gt;head == NULL) {
+        return NULL;
+    }
+    struct SingleListNode *node = list-&gt;head;
+    if (node-&gt;next == NULL) {
+        list-&gt;head = NULL;
+        --list-&gt;size;
+        return node;
+    }
+    while (node-&gt;next-&gt;next != NULL) {
+        node = node-&gt;next;
+    }
+    struct SingleListNode *temp = node-&gt;next;
+    node-&gt;next = NULL;
+    --list-&gt;size;
+    temp-&gt;next = NULL;
+    return temp;
+}
+
+/**
+ * 头部弹出一个节点，节点使用完后一定要free掉
+ */
+struct SingleListNode* SingleListPopFront(struct SingleList *list) {
+    if (list-&gt;head == NULL) {
+        return NULL;
+    }
+    struct SingleListNode *node = list-&gt;head;
+    list-&gt;head = list-&gt;head-&gt;next;
+    --list-&gt;size;
+    node-&gt;next = NULL;
+    return node;
+}
+
+/**
+ * 按索引获取某个节点
+ */
+struct SingleListNode* SingleListAt(struct SingleList *list, unsigned int index) {
+    if (list-&gt;head == NULL || index &gt;= list-&gt;size) {
+        printf(&quot;ERROR: index out of list! [%d &gt; %d]\n&quot;, index, list-&gt;size);
+        return NULL;
+    }
+    struct SingleListNode *node = list-&gt;head;
+    for (unsigned int i = 0; i &lt; index; i++) {
+        node = node-&gt;next;
+    }
+    return node;
+}
+
+/**
+ * 指定位置插入数据
+ * 思路：找到指定位置的前一个节点的后面加入节点
+ */
+void SingleListInsert(struct SingleList *list, unsigned int pos, type data) {
+    if (pos &gt; list-&gt;size) {
+        printf(&quot;ERROR: index out of list! [%d &gt; %d]\n&quot;, pos, list-&gt;size);
+        return;
+    }
+    if (pos == 0) {
+        SingleListPushFront(list, data);
+        return;
+    }
+    struct SingleListNode *temp = SingleListAt(list, pos - 1);
+    struct SingleListNode *node = (struct SingleListNode*)malloc(sizeof(struct SingleListNode));
+    node-&gt;data = data;
+    node-&gt;next = temp-&gt;next;
+    temp-&gt;next = node;
+    ++list-&gt;size;
+}
+
+/**
+ * 移除指定位置的节点
+ * 思路：找到指定位置的前一个节点指向后一个节点
+ * TODO: 有BUG！
+ */
+void SingleListRemove(struct SingleList *list, unsigned int pos) {
+    if (pos &gt; list-&gt;size) {
+        printf(&quot;ERROR: index out of list! [%d &gt; %d]\n&quot;, pos, list-&gt;size);
+        return;
+    }
+    struct SingleListNode *node;
+    if (pos == 0) {
+        node = SingleListPopFront(list);
+        free(node);
+        return;
+    }
+    if (pos == list-&gt;size - 1) {
+        node = SingleListPopBack(list);
+        free(node);
+        return;
+    }
+    node = SingleListAt(list, pos - 1);
+    struct SingleListNode *temp = node-&gt;next;
+    temp-&gt;next = NULL;
+    free(temp);
+    node-&gt;next = node-&gt;next-&gt;next;
+    --list-&gt;size;
+}
+
+/**
+ * 反转链表
+ * 思路：头插法，新开一个临时链表，将节点从老链表中移除依次插入新链表的头部
+ */
+void SingleListReverse(struct SingleList *list) {
+    if (list-&gt;head == NULL || list-&gt;head-&gt;next == NULL) {
+        return;
+    }
+    struct SingleList *tempList = SingleListCreate();
+    struct SingleListNode *node = SingleListPopFront(list);
+    while(node != NULL) {
+        node-&gt;next = tempList-&gt;head;
+        tempList-&gt;head = node;
+        ++tempList-&gt;size;
+        node = SingleListPopFront(list);
+    }
+    list-&gt;head = tempList-&gt;head;
+    list-&gt;size = tempList-&gt;size;
+    tempList-&gt;head = NULL;
+    free(tempList);
+}
+
+/**
+ * 链表转数组
+ * 数组用完记得free掉！
+ */
+type* SingleListToArray(struct SingleList *list) {
+    type *array = (type*)malloc(sizeof(type) * list-&gt;size);
+    struct SingleListNode *node = list-&gt;head;
+    for (unsigned int i = 0; i &lt; list-&gt;size &amp;&amp; node != NULL; i++) {
+        array[i] = node-&gt;data;
+        node = node-&gt;next;
+    }
+    return array;
+}
+
+/**
+ * 数组转链表
+ * 用完记得free掉！
+ */
+struct SingleList* SingleListFromArray(type* array, unsigned int len) {
+    if (array == NULL) {
+        return NULL;
+    }
+    struct SingleList *list = SingleListCreate();
+    for (unsigned int i = 0; i &lt; len; i++) {
+        SingleListPushBack(list, array[i]);
+    }
+    return list;
+}
+
+/**
+ * 截取子链表
+ * 用完记得free掉！
+ * 前闭后开区间
+ */
+struct SingleList* SingleListSub(struct SingleList *list, unsigned int bpos, unsigned int epos) {
+    if (bpos &gt; epos) {
+        unsigned int tempInt = bpos;
+        bpos = epos;
+        epos = tempInt;
+    }
+    if (epos &gt;= list-&gt;size) {
+        printf(&quot;ERROR: index out of list! [%d &gt; %d]\n&quot;, epos, list-&gt;size);
+        return NULL;
+    }
+    struct SingleList *subList = SingleListCreate();
+    struct SingleListNode *node = list-&gt;head;
+    for (unsigned int i = 0; i &lt; bpos; i++) {
+        node = node-&gt;next;
+    }
+    for (unsigned int i = bpos; i &lt; epos; i++) {
+        SingleListPushBack(subList, node-&gt;data);
+        node = node-&gt;next;
+    }
+    return subList;
+}
+
+/**
+ * 清空链表
+ */
+void SingleListErase(struct SingleList *list) {
+    while (list-&gt;head != NULL) {
+        struct SingleListNode *node = list-&gt;head;
+        list-&gt;head = list-&gt;head-&gt;next;
+        node-&gt;next = NULL;
+        free(node);
+        --list-&gt;size;
+    }
+}
+
+/**
+ * 调测用，打印节点
+ */
+void SingleListPrintNode(unsigned int index, struct SingleListNode *node) {
+    printf(&quot;%03d\taddr=%p\tnext=%p\tval=%d\n&quot;, index, node, node-&gt;next, node-&gt;data);
+}
+
+/**
+ * 调测用，打印链表
+ */
+void SingleListPrintList(struct SingleList *list) {
+    struct SingleListNode *temp = list-&gt;head;
+    for(unsigned int i = 0; i &lt; list-&gt;size &amp;&amp; temp != NULL; temp = temp-&gt;next, ++i) {
+        SingleListPrintNode(i, temp);
+    }
+    printf(&quot;list-&gt;size = %d\n&quot;, list-&gt;size);
+}
+
+
+void test() {
+    printf(&quot;--PushFront--------------\n&quot;);
+    struct SingleList *list = SingleListCreate();
+    for (int i = 10; i &lt; 20; i++) {
+        SingleListPushFront(list, i);
+    }
+    SingleListPrintList(list);
+    printf(&quot;--PopFront---------------\n&quot;);
+    struct SingleListNode *node = NULL;
+    node = SingleListPopFront(list);
+    if (node != NULL) {
+        SingleListPrintNode(0, node);
+        free(node);
+    }
+    printf(&quot;--PopBack----------------\n&quot;);
+    node = SingleListPopBack(list);
+    if (node != NULL) {
+        SingleListPrintNode(0, node);
+        free(node);
+    }
+    printf(&quot;--At---------------------\n&quot;);
+    for (unsigned int i = 0; i &lt; list-&gt;size; i++) {
+        SingleListPrintNode(i, SingleListAt(list, i));
+    }
+    printf(&quot;--Insert-----------------\n&quot;);
+    SingleListInsert(list, 0, 22);
+    SingleListInsert(list, 1, 23);
+    SingleListInsert(list, list-&gt;size, 24);
+    SingleListPrintList(list);
+    printf(&quot;--Remove-----------------\n&quot;);
+    SingleListRemove(list, 0);
+    //SingleListRemove(list, 2);
+    SingleListPrintList(list);
+    printf(&quot;--Reverse----------------\n&quot;);
+    SingleListReverse(list);
+    SingleListPrintList(list);
+    printf(&quot;--Sub--------------------\n&quot;);
+    struct SingleList *subList = SingleListSub(list, 4, 18);
+    if (subList != NULL) {
+        SingleListPrintList(subList);
+        SingleListErase(subList);
+        free(subList);
+    }
+    printf(&quot;--ToArray----------------\n&quot;);
+    type *arr = SingleListToArray(list);
+    for (unsigned int i = 0; i &lt; list-&gt;size; i++) {
+        printf(&quot;%03d\t%d\n&quot;, i, arr[i]);
+    }
+    free(arr);
+    printf(&quot;--FromArray--------------\n&quot;);
+    type *arr2 = (type*)malloc(sizeof(type) * 4);
+    for (int i = 0; i &lt; 4; i++) {
+        arr2[i] = 30 + i;
+    }
+    struct SingleList *newList = SingleListFromArray(arr2, 4);
+    SingleListPrintList(newList);
+    SingleListErase(newList);
+    free(newList);
+    printf(&quot;--Erase------------------\n&quot;);
+    SingleListErase(list);
+    SingleListPrintList(list);
+}
+
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/c'>#c</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

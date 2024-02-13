@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - Windows多网卡路由配置</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">Windows多网卡路由配置</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<p>Windows多网卡路由配置常用命令</p>
+<pre><code class="language-sh">#例子1：要显示IP路由表的完整内容
+route print
+#例子2：要显示IP路由表中以10.开始的路由
+route print 10.*
+#例子3：要添加默认网关地址为192.168.12.1的默认路由
+route add 0.0.0.0 mask 0.0.0.0 192.168.12.1
+#例子4：要添加目标为10.41.0.0，子网掩码为255.255.0.0，下一个跃点地址为10.270.1的路由
+route add 10.41.0.0 mask 255.255.0.0 10.27.0.1
+#例子5：要添加目标为10.41.0.0，子网掩码为255.255.0.0，下一个跃点地址为10.270.1的永久路由
+route -p add 10.41.0.0 mask 255.255.0.0 10.27.0.1
+#例子6：要添加目标为10.41.0.0，子网掩码为255.255.0.0，下一个跃点地址为10.27.0.1，跃点数为7的路由
+route add 10.41.0.0 mask 255.255.0.0 10.27.0.1 metric 7
+#例子7：要添加目标为10.41.0.0，子网掩码为255.255.0.0，下一个跃点地址为10.27.0.1，接口索引为0x3的路由
+route add 10.41.0.0 mask 255.255.0.0 10.27.0.1 if 0x3
+#例子8：要删除目标为10.41.0.0，子网掩码为255.255.0.0的路由
+route delete 10.41.0.0 mask 255.255.0.0
+#例子9：要删除IP路由表中以10.开始的所有路由
+route delete 10.*
+#例子10：要将目标为10.41.0.0子网掩码为255.255.0.0的路由的下一个跃点地址由10.27.0.1更改为10.27.0.25
+route change 10.41.0.0 mask 255.255.0.0 10.27.0.25
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/network'>#network</a>
+ <a href='/tags/win'>#win</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

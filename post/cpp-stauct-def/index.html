@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - 结构体定义</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">结构体定义</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<p>平常看C语言的程序时，见到结构体定义有些是使用typedef定义，有些是直接使用struct定义，感觉有点混乱，其实简单梳理下就很清楚了。</p>
+<h2>使用struct</h2>
+<pre><code class="language-c">struct Student{
+    unsigned int id;
+    char* name;
+}Stu1, Stu2;
+</code></pre>
+<p><code>Student</code>是<code>标识符</code>，或者叫标签(Tag)，可以通过<code>struct Student Stu1; </code>来定义这个结构体的变量。</p>
+<p><code>Stu1, Stu2</code>是<code>变量</code>,可以不写，也可以写一个或多个，甚至可以写成数组。不写的话后面用到的时候可以通过<code>struct Student Stu1, Stu2;</code>来定义两个结构体变量。</p>
+<p>实际的工作过程相当于以下代码</p>
+<pre><code class="language-c">// 定义Student结构体
+struct Student{
+    unsigned int id;
+    char* name;
+};
+// 定义两个Student结构体的变量Stu1, Stu2
+struct Student Stu1, Stu2;
+</code></pre>
+<h2>使用typedef</h2>
+<pre><code class="language-c">typedef struct Student{
+    unsigned int id;
+    char* name;
+}Stu;
+</code></pre>
+<p><code>Student</code>的含义和使用struct定义出来的相同，<!-- raw HTML omitted -->可以不写<!-- raw HTML omitted -->。</p>
+<p><code>Stu</code>是<code>变量类型</code>，跟直接使用struct含义不同了，它实际上相当于<code>struct Student</code>, 可以直接使用<code>Stu stu1;</code>来定义这个结构体的变量。可以写一到多个。</p>
+<p>使用typedef定义结构体相当于以下代码完成的工作：</p>
+<pre><code class="language-c">// 定义Student结构体
+struct Student{
+    unsigned int id;
+    char* name;
+};
+// 给Student结构体起个别名Stu
+typedef struct Student Stu;
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/c'>#c</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

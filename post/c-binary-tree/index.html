@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - 二叉树练习</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">二叉树练习</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<p>主要是遍历，二叉搜索树的基础。</p>
+<pre><code class="language-c">#pragma once
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef int type;
+
+struct BinaryTreeNode {
+    type data;
+    struct BinaryTreeNode *left;
+    struct BinaryTreeNode *right;
+};
+
+/**
+ * 先序遍历， 根-&gt;左-&gt;右
+ */
+void preorder(struct BinaryTreeNode *node) {
+    if (node != NULL) {
+        printf(&quot;%d &quot;, node-&gt;data);
+        preorder(node-&gt;left);
+        preorder(node-&gt;right);
+    }
+}
+
+/**
+ * 中序遍历， 左-&gt;根-&gt;右
+ */
+void inorder(struct BinaryTreeNode *node) {
+    if (node != NULL) {
+        inorder(node-&gt;left);
+        printf(&quot;%d &quot;, node-&gt;data);
+        inorder(node-&gt;right);
+    }
+}
+
+/**
+ * 后序遍历， 左-&gt;右-&gt;根
+ */
+void postorder(struct BinaryTreeNode *node) {
+    if (node != NULL) {
+        postorder(node-&gt;left);
+        postorder(node-&gt;right);
+        printf(&quot;%d &quot;, node-&gt;data);
+    }
+}
+
+struct BinaryTreeNode* BinaryNodeBuild(type data) {
+    struct BinaryTreeNode *node = (struct BinaryTreeNode*)malloc(sizeof(struct BinaryTreeNode));
+    node-&gt;data = data;
+    node-&gt;left = NULL;
+    node-&gt;right = NULL;
+    return node;
+}
+
+void test() {
+    struct BinaryTreeNode *node1, *node2, *node3, *node4;
+    node1 = BinaryNodeBuild(4);
+    node2 = BinaryNodeBuild(5);
+    node3 = BinaryNodeBuild(6);
+    node4 = BinaryNodeBuild(7);
+
+    node1-&gt;left = node2;
+    node1-&gt;right = node3;
+    node2-&gt;right = node4;
+
+    preorder(node1);
+    printf(&quot;\n&quot;);
+    inorder(node1);
+    printf(&quot;\n&quot;);
+    postorder(node1);
+    printf(&quot;\n&quot;);
+}
+
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/c'>#c</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

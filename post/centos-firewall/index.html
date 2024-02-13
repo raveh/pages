@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - CentOS防火墙</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">CentOS防火墙</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<pre><code class="language-bash">firewall-cmd --zone=public --add-port=80/tcp --permanent
+firewall-cmd --zone=public --remove-port=80/tcp --permanent
+firewall-cmd --zone=public --add-port=5000-5500/tcp --permanent
+firewall-cmd --zone=public --remove-port=5000-5500/tcp --permanent
+firewall-cmd --zone=public --add-service=ftp --permanent
+firewall-cmd --zone=public --remove-service=ftp --permanent
+
+firewall-cmd --reload
+firewall-cmd --list-all
+
+firewall-cmd --zone=public --add-port=7676/tcp --permanent
+firewall-cmd --zone=public --add-port=17100-17200/tcp --permanent
+
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='178.128.120.175' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='185.165.190.34' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='199.195.249.201' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='198.98.57.49' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='195.144.21.56' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='45.79.116.95' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='167.248.133.44' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='162.142.125.222' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='138.255.12.128' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='178.155.186.8' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='185.165.190.34' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='54.87.86.170' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='194.87.151.116' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='34.140.248.32' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='188.166.3.224' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='46.254.19.135' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='34.66.65.152' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='185.246.220.98' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='74.82.47.4' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='103.178.229.13' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='103.173.157.248' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='44.200.122.193' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='103.180.149.22' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='109.237.98.226' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='210.74.130.162' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='111.90.150.36' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='171.22.30.125' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='85.192.62.238' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='188.166.225.200' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='164.52.36.213' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='170.64.190.132' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='47.92.209.253' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='15.206.158.169' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='165.232.90.114' reject&quot;
+firewall-cmd --add-rich-rule=&quot;rule family='ipv4' source address='109.237.97.180' reject&quot;
+
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/linux'>#linux</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

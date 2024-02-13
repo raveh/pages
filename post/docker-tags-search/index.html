@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - 镜像标签检索小工具</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">镜像标签检索小工具</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<pre><code class="language-bash">#!/bin/sh
+#
+# Simple script that will display docker repository tags.
+#
+# Usage:
+#   $ docker-tags-search.sh centos gitea/gitea
+
+function showUsage() {
+  echo &quot;Usage:&quot;
+  echo &quot;`basename $0 .sh` centos gitea/gitea&quot;
+}
+
+function search() {
+  for str in $* ; do
+    if [[ $str == *&quot;/&quot;* ]]; then
+      project=`echo $str|awk -F '/' '{print $1}'`
+      repo=`echo $str|awk -F '/' '{print $2}'`
+    else
+      project=&quot;library&quot;
+      repo=$str
+    fi
+    echo &quot;$project/$repo tags:&quot;
+    curl -s -S &quot;https://registry.hub.docker.com/v2/repositories/$project/$repo/tags/&quot; | \
+      sed -e 's/,/,\n/g' -e 's/\[/\[\n/g' | \
+      grep '&quot;name&quot;' | \
+      awk -F\&quot; '{print $4;}' | \
+      sort -fu | \
+      sed -e &quot;s/^/${Repo}:/&quot;
+  done
+}
+
+type curl &gt;/dev/null 2&gt;&amp;1 || { echo &gt;&amp;2 &quot;require curl but it's not installed, abort!&quot;; exit 1; }
+if [ $# -lt 1 ]; then
+  showUsage
+  exit 0
+fi
+search $*
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/docker'>#docker</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->

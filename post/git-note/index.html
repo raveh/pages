@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/prism.css">
+<script src="/js/prism.js"></script>
+<title>Raveh's - Git笔记</title>
+</head>
+<body class="line-numbers">
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper"><a href="/" class="logo">Raveh's</a></div>
+        <nav class="site-navbar">
+          <ul id="menu" class="menu">
+            <li class="menu-item"><a class="menu-item-link" href="/">Home</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/archive/">Archives</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/tags/">Tags</a></li>
+            <li class="menu-item"><a class="menu-item-link" href="/about/">About</a></li>
+          </ul>
+        </nav>
+    </header>
+  </div>
+
+  <article class="post">
+    <header class="post-header">
+      <p class="post-title">Git笔记</p>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        <!-- raw HTML omitted -->
+<pre><code class="language-bash"># 克隆项目到本地
+git clone 项目地址
+# checkout到develop分支
+git checkout develop
+# 添加变更
+git add *
+# 提交到本地
+git commit -m &quot;备注信息&quot;
+# 切换到本地master分支,并将develop合入master操作
+git checkout master
+git merge develop
+# 提交到远程
+git push
+</code></pre>
+<pre><code class="language-bash"># 设置全局用户名以及邮箱
+git config --global user.name &quot;用户名&quot;
+git config --global user.email &quot;邮箱地址&quot;
+# 解决长路径问题
+git config --global core.longpaths true
+# 全局忽略文件
+&gt; ~/.gitignore
+echo '*.class' &gt;&gt; ~/.gitignore
+echo '*.iml' &gt;&gt; ~/.gitignore
+echo '*/.idea/' &gt;&gt; ~/.gitignore
+echo '.idea/' &gt;&gt; ~/.gitignore
+echo '*/target/' &gt;&gt; ~/.gitignore
+echo 'target/' &gt;&gt; ~/.gitignore
+echo '*/output/' &gt;&gt; ~/.gitignore
+echo 'output/' &gt;&gt; ~/.gitignore
+echo '*/build/' &gt;&gt; ~/.gitignore
+echo 'build/' &gt;&gt; ~/.gitignore
+git config --global core.excludesfile ~/.gitignore
+</code></pre>
+
+      </div>
+      <div class="post-tags">
+        <a href='/tags/git'>#git</a>
+
+      </div>
+    </div>
+    <div class="post-foot">
+      &copyraveh.net
+    </div>
+  </article>
+  
+</body>
+</html>
+
+<!-- powered by raveh.net page generator (version:0.1.1/20230918) -->
